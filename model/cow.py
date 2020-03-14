@@ -21,7 +21,7 @@ class Cow(BasicObject):
     texture_name = None
 
     def __init__(self, is_trans=True, vertex_shaders=['Phong.vertexshader.glsl'],
-                 fragment_shaders=['Phong.fragmentshader.glsl'], texture_name='AK.png'):
+                 fragment_shaders=['Phong.fragmentshader.glsl'], texture_name='wood.jpg'):
         self.is_trans = is_trans
         self.vertex_shaders = vertex_shaders
         self.fragment_shaders = fragment_shaders

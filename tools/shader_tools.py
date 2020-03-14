@@ -11,6 +11,8 @@ GOURAUD_VERTEX_SHADER = 'Gouraud.vertexshader.glsl'
 GOURAUD_FRAGMENT_SHADER = 'Gouraud.fragmentshader.glsl'
 FLAT_VERTEX_SHADER = 'Flat.vertexshader.glsl'
 FLAT_FRAGMENT_SHADER = 'Flat.fragmentshader.glsl'
+TEXTURE_VERTEX_SHADER = 'Texture.vertexshader.glsl'
+TEXTURE_FRAGMENT_SHADER = 'Texture.fragmentshader.glsl'
 
 
 class Shader(object):
@@ -20,7 +22,7 @@ class Shader(object):
     attribute_list = None
     uniform_default_value = None
 
-    def initShader(self, vertex_shader_names, fragment_shader_names):
+    def init_shader(self, vertex_shader_names, fragment_shader_names):
 
         self.vertex_shader_names = vertex_shader_names
         self.fragment_shader_names = fragment_shader_names
@@ -61,6 +63,7 @@ class Shader(object):
     def bind_parameters(self, w_object):
         # get uniform and attribute set
         self.shader_parameters()
+
         # get id of uniform and attribute
         for uniform in self.uniform_list:
             location = glGetUniformLocation(self.program, uniform)
@@ -72,15 +75,16 @@ class Shader(object):
             if location in (None, -1):
                 print('Warning, no attribute: %s' % attribute)
             setattr(w_object, attribute + '_loc', location)
-        # get default value of attribute
+
+        # get default value of uniform
         uniform_default_value = {}
         for vertex_name in self.vertex_shader_names:
             default_value_dict = light.parameter_dict.get(vertex_name, None)
             if default_value_dict is not None:
                 for uniform in self.uniform_list:
                     default_value = default_value_dict.get(uniform, None)
-                    # if not contain this value, add this
-                    if not uniform_default_value.__contains__(uniform):
+                    # if default_value is not None && not contain this value, add this
+                    if (default_value is not None) and (uniform not in uniform_default_value):
                         uniform_default_value[uniform] = default_value
         self.uniform_default_value = uniform_default_value
 

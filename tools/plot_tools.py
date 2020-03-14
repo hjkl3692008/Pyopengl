@@ -13,9 +13,6 @@ import tools.trans_tools as trans_t
 import tools.texture_tools as texture_t
 
 
-from model import cow_texture
-
-
 RED_COLOR = np.array([1.0, 0.0, 0.0, 1.0])
 BLUE_COLOR = np.array([0.0, 0.0, 1.0, 1.0])
 GREEN_COLOR = np.array([0.0, 1.0, 0.0, 1.0])
@@ -24,8 +21,6 @@ YELLOW_COLOR = np.array([1.0, 1.0, 0.0, 1.0])
 COLOR_DICT = {1: RED_COLOR, 2: BLUE_COLOR, 3: GREEN_COLOR, 4: YELLOW_COLOR}
 
 POLYGON_AND_LINE = 'BOTH'
-
-cow = cow_texture.Cow_texture()
 
 
 class Vertex:
@@ -129,75 +124,31 @@ def plot_cow(gl_type, points, polygons, is_random_color=True, light=None, camera
         plot_polygons(points, polygons, is_random_color)
         plot_lines(points, polygons)
     elif gl_type == GL_TRIANGLES:  # triangles mode
-
-        # plot_triangles(points, polygons)
-
-        shader = st.Shader()
-        shader.initShader(['StandardShading.vertexshader.glsl'], ['StandardShading.fragmentshader.glsl'])
-
-        MVP_ID = glGetUniformLocation(shader.program, "MVP")
-        ModelMatrix_ID = glGetUniformLocation(shader.program, "M")
-        ViewMatrix_ID = glGetUniformLocation(shader.program, "V")
-        Texture_ID = glGetUniformLocation(shader.program, "myTextureSampler")
-        Light_ID = glGetUniformLocation(shader.program, "LightPosition_worldspace")
-        OFFSET_ID = glGetUniformLocation(shader.program, "LOCATION_OFFSET")
-
-        bind_mode = [bt.BIND_VERTEX, bt.BIND_NORMAL, bt.BIND_INDICES]
-        vertexbuffer, normalbuffer, indicesbuffer = bt.bind_object(bind_mode, points, polygons)
-
-        # texture = texture_t.Texture('uvmap.DDS')
-
-        shader.begin()
-
-        glUniformMatrix4fv(ModelMatrix_ID, 1, GL_FALSE, glm.value_ptr(glm.mat4(1.0)))
-        location = np.array([0.0, 0.0, 0.0])
-        glUniform3f(OFFSET_ID, location[0], location[1], location[2])
-
-        lightPos = glm.vec3(0.0, 0.0, 4.0)
-        glUniform3f(Light_ID, lightPos.x, lightPos.y, lightPos.z)
-
-        glEnableVertexAttribArray(0)
-        glBindBuffer(GL_ARRAY_BUFFER, vertexbuffer)
-        glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, None)
-
-        glEnableVertexAttribArray(2)
-        glBindBuffer(GL_ARRAY_BUFFER, normalbuffer)
-        glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, 0, None)
-
-        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indicesbuffer)
-
-        glDrawElements(
-            GL_TRIANGLES,  # mode
-            points.shape[0],  # // count
-            GL_UNSIGNED_SHORT,  # // type
-            None  # // element array buffer offset
-        )
-        glDisableVertexAttribArray(0)
-        glDisableVertexAttribArray(2)
+        plot_triangles(points, polygons)
 
 
-def infinity_light(normal, light, ca):
-
-    light_direction = light.LIGHT_DIRECTION
-    view_direction = ca.N
-    reflect_light_direction = ct.reflect(light_direction, normal)
-
-    light_intensity = light.INTENSITY
-
-    # ambient
-    ambient = np.maximum(np.zeros(3), light_intensity * cow.K_AMBIENT)
-    # diffuse
-    diffuse = np.maximum(np.zeros(3), light_intensity * cow.K_DIFFUSE * np.dot(normal, light_direction))
-
-    # specular
-    temp = np.maximum(0.0, np.dot(reflect_light_direction, view_direction))
-    if diffuse[0] == 0.0:
-        temp = 0.0
-    else:
-        temp = np.pow(temp, cow.SHININESS_DEGREE)
-    specular = np.maximum(np.zeros(3), light_intensity * cow.K_SPECULAR * temp)
-
-    rgb = np.minimum(np.ones(3), ambient + diffuse + specular)
-    color = np.array([rgb[0], rgb[1], rgb[2], 1.0])
-
-    return color
+# def infinity_light(normal, light, ca):
+#
+#     light_direction = light.LIGHT_DIRECTION
+#     view_direction = ca.N
+#     reflect_light_direction = ct.reflect(light_direction, normal)
+#
+#     light_intensity = light.INTENSITY
+#
+#     # ambient
+#     ambient = np.maximum(np.zeros(3), light_intensity * cow.K_AMBIENT)
+#     # diffuse
+#     diffuse = np.maximum(np.zeros(3), light_intensity * cow.K_DIFFUSE * np.dot(normal, light_direction))
+#
+#     # specular
+#     temp = np.maximum(0.0, np.dot(reflect_light_direction, view_direction))
+#     if diffuse[0] == 0.0:
+#         temp = 0.0
+#     else:
+#         temp = np.pow(temp, cow.SHININESS_DEGREE)
+#     specular = np.maximum(np.zeros(3), light_intensity * cow.K_SPECULAR * temp)
+#
+#     rgb = np.minimum(np.ones(3), ambient + diffuse + specular)
+#     color = np.array([rgb[0], rgb[1], rgb[2], 1.0])
+#
+#     return color

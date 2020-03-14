@@ -2,8 +2,10 @@ import pandas as pd
 import os
 import struct
 import numpy as np
+from PIL import Image
 
 from OpenGL.GL.EXT import texture_compression_s3tc
+
 
 # get cwd
 def get_cwd():
@@ -49,8 +51,21 @@ def load_shader_file(vertex_shader_names, fragment_shader_names):
 
 
 # load texture
-def load_texture_file(texture_name):
+TEXTURE_DDS = 'DDS'
+TEXTURE_PNG = 'BMP'
+
+
+def load_texture_file(texture_name, texture_type):
     file_path = join_path(basic_path, 'resource', 'texture', texture_name)
+    if texture_type == TEXTURE_DDS:
+        head, dds_buffer = load_dds_texture(file_path)
+        return head, dds_buffer
+    elif texture_type == TEXTURE_PNG:
+        para_dict, buffer = load_png_texture(file_path)
+        return para_dict, buffer
+
+
+def load_dds_texture(file_path):
     f = open(file_path, 'rb')
     dds_tag = f.read(4)
     if dds_tag != b"DDS ":
@@ -72,6 +87,15 @@ def load_texture_file(texture_name):
     dds_buffer = f.read(bufferSize)
     f.close()
     return head, dds_buffer
+
+
+def load_png_texture(file_path, mode='RGB'):
+    image = Image.open(file_path)
+    converted = image.convert(mode)
+    buffer = converted.transpose(Image.FLIP_TOP_BOTTOM).tobytes()
+    para_dict = {'height': image.height, 'width': image.width, 'mode': mode}
+    image.close()
+    return para_dict, buffer
 
 
 # load_cow

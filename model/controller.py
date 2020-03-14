@@ -5,10 +5,10 @@ import numpy as np
 
 class Controller:
     
-    def __init__(self, window, camera, mouse, update_f=None):
+    def __init__(self, window, update_f=None):
         self.window = window
-        self.camera = camera
-        self.mouse = mouse
+        self.camera = window.camera
+        self.mouse = window.mouse
         # distance, elevation, direction angle between eye and look point
         self.DIST, self.PHI, self.THETA = getposture(self.camera)
         self.update_function = update_f

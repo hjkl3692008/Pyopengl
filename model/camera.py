@@ -1,4 +1,5 @@
 import numpy as np
+import glm
 
 
 class Camera:
@@ -12,15 +13,24 @@ class Camera:
 
     # view frustum
     d = None  # near
-    h = None  # 1/2 high
+    half_h = None  # 1/2 high
     f = None  # far
+    fov = None  # Field of View
 
-    # VIEW Frustum
+    width = None
+    height = None
+
     VIEW = None
     LOOK_AT = None
 
-    def __init__(self, position=np.array([0.0, 0.0, 10.0]), pref=np.array([0.0, 0.0, -1.0]), \
-                 vv=np.array([0.0, 1.0, 0.0]), d=2.0, h=2.0, f=100.0):
+    # project matrix
+    ProjectionMatrix = None
+    ViewMatrix = None
+
+    MVP = None
+
+    def __init__(self, position=np.array([0.0, 0.0, 10.0]), pref=np.array([0.0, 0.0, -1.0]),
+                 vv=np.array([0.0, 1.0, 0.0]), d=0.1, width=500, height=500, f=100.0):
         self.EYE = position
         self.PREF = pref
         self.vv = vv
@@ -28,12 +38,33 @@ class Camera:
         self.U = np.cross(self.N, self.vv) / np.linalg.norm(np.cross(self.N, self.vv))
         self.EYE_UP = np.cross(self.U, self.N)
         self.d = d
-        self.h = h
+        self.half_h = height / 2
         self.f = f
-        left_bottom_near = self.EYE + self.d * self.N - self.h * self.U - self.h * self.EYE_UP
-        right_top_near = self.EYE + self.d * self.N + self.h * self.U + self.h * self.EYE_UP
-        self.VIEW = np.array([left_bottom_near[0], right_top_near[0], left_bottom_near[1], right_top_near[1],\
+        self.width = width
+        self.height = height
+        slope = np.sqrt((pow(d, 2) + pow((width / 2), 2)))
+        self.fov = 2 * np.arctan(self.half_h / slope)
+        left_bottom_near = self.EYE + self.d * self.N - self.half_h * self.U - self.half_h * self.EYE_UP
+        right_top_near = self.EYE + self.d * self.N + self.half_h * self.U + self.half_h * self.EYE_UP
+        self.VIEW = np.array([left_bottom_near[0], right_top_near[0], left_bottom_near[1], right_top_near[1],
                               np.array([self.d]), np.array([self.f])])
         # self.VIEW = np.array([-5, 5, -5, 5, self.d, self.f])
         # self.LOOK_AT = self.EYE + self.PREF
         self.LOOK_AT = np.array([0, 0, 0])
+        self.ProjectionMatrix = glm.perspective(self.fov,
+                                                float(self.width) / float(self.height), self.d, self.f)
+
+        self.calcView()
+        self.calcMVP()
+
+    def calcMVP(self, modelMaterix=glm.mat4(1.0)):
+        self.calcView()
+        self.MVP = self.ProjectionMatrix * self.ViewMatrix * modelMaterix
+
+    def calcView(self):
+        self.ViewMatrix = glm.lookAt(glm.vec3(self.EYE[0], self.EYE[1], self.EYE[2]),
+                                     glm.vec3(self.LOOK_AT[0], self.LOOK_AT[1], self.LOOK_AT[2]),
+                                     glm.vec3(self.vv[0], self.vv[1], self.vv[2])
+                                     )
+
+

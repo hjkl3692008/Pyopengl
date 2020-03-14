@@ -3,6 +3,7 @@ from OpenGL.GLU import *
 from OpenGL.GLUT import *
 
 import numpy as np
+import glm
 
 from model import *
 
@@ -25,7 +26,7 @@ class Window:
         self.camera = camera.Camera()
         self.mouse = mouse.Mouse()
         self.update_function = GLUT.glutPostRedisplay
-        self.w_controller = controller.Controller(self, self.camera, self.mouse, update_f=self.update_function)
+        self.w_controller = controller.Controller(self, update_f=self.update_function)
 
     def mouseclick(self, *args, **kwargs):
         if self.w_controller is not None:
@@ -68,10 +69,10 @@ class Window:
         glutMotionFunc(self.mousemotion)  # mouse motion
         glutKeyboardFunc(self.keydown)  # key down
 
-    def add_object(self, w_object, location=None, rotate=None):
+    def add_object(self, w_object, location=np.array([0.0, 0.0, 0.0]), rotate=np.array([0, 0.0, 0.0, 0.0])):
         w_object.load_object()
         w_object.load_shader()
-        # w_object.load_texture()
+        w_object.load_texture()
         w_object.location = location
         w_object.rotate = rotate
         self.w_objects.append(w_object)
@@ -111,14 +112,16 @@ class Window:
         glScale(self.SCALE_K[0], self.SCALE_K[1], self.SCALE_K[2])
 
         # set view point
-        gluLookAt(
-            self.camera.EYE[0], self.camera.EYE[1], self.camera.EYE[2],
-            self.camera.LOOK_AT[0], self.camera.LOOK_AT[1], self.camera.LOOK_AT[2],
-            self.camera.EYE_UP[0], self.camera.EYE_UP[1], self.camera.EYE_UP[2]
-        )
+        # gluLookAt(
+        #     self.camera.EYE[0], self.camera.EYE[1], self.camera.EYE[2],
+        #     self.camera.LOOK_AT[0], self.camera.LOOK_AT[1], self.camera.LOOK_AT[2],
+        #     self.camera.EYE_UP[0], self.camera.EYE_UP[1], self.camera.EYE_UP[2]
+        # )
 
         # set view window
         glViewport(0, 0, self.WIN_W, self.WIN_H)
+
+        self.camera.calcMVP(glm.mat4(1.0))
 
         if len(self.w_objects) != 0:
             for w_object in self.w_objects:
@@ -129,7 +132,7 @@ class Window:
                 if w_object.rotate is not None:
                     # rotate
                     glRotatef(w_object.rotate[0], w_object.rotate[1], w_object.rotate[2], w_object.rotate[3])  # angle, x, y ,z
-                w_object.rendering()
+                w_object.rendering(self)
                 glPopMatrix()
         glutSwapBuffers()
 

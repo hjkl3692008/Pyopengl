@@ -6,13 +6,15 @@ from tools import calculate_tools as ct
 BIND_VERTEX = 'BIND_VERTEX'
 BIND_NORMAL = 'BIND_NORMAL'
 BIND_INDICES = 'BIND_INDICES'
+BIND_UV = 'BIND_UV'
 
 
-def bind_object(bind_type, vertexes, indices, normals):
+def bind_object(bind_type, vertexes, indices, normals, uv):
     # triangles = tt.polygon2triangle(polygons)
     vertexbuffer = None
     normalbuffer = None
     indicesbuffer = None
+    uvbuffer = None
 
     for bt in bind_type:
         if bt == BIND_VERTEX:
@@ -38,5 +40,11 @@ def bind_object(bind_type, vertexes, indices, normals):
                          (GLushort * len(indices_list))(*indices_list),
                          GL_STATIC_DRAW)
             # glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices.nbytes, indices, GL_STATIC_DRAW)
+        if bt == BIND_UV:
+            uvbuffer = glGenBuffers(1)
+            glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, uvbuffer)
+            uv_list = uv.flatten().tolist()
+            glBufferData(GL_ELEMENT_ARRAY_BUFFER, len(uv_list) * 4,
+                         (GLfloat * len(uv_list))(*uv_list), GL_STATIC_DRAW)
 
-    return vertexbuffer, normalbuffer, indicesbuffer
+    return vertexbuffer, normalbuffer, indicesbuffer, uvbuffer

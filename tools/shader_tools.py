@@ -13,6 +13,8 @@ FLAT_VERTEX_SHADER = 'Flat.vertexshader.glsl'
 FLAT_FRAGMENT_SHADER = 'Flat.fragmentshader.glsl'
 TEXTURE_VERTEX_SHADER = 'Texture.vertexshader.glsl'
 TEXTURE_FRAGMENT_SHADER = 'Texture.fragmentshader.glsl'
+ANIMATED_VERTEX_SHADER = 'Animated.vertexshader.glsl'
+ANIMATED_FRAGMENT_SHADER = 'Animated.fragmentshader.glsl'
 
 
 class Shader(object):

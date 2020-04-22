@@ -73,6 +73,8 @@ class Window:
         w_object.load_object()
         w_object.load_shader()
         w_object.load_texture()
+        w_object.update_f = self.update_function
+        w_object.time_function(1)
         w_object.location = location
         w_object.rotate = rotate
         self.w_objects.append(w_object)

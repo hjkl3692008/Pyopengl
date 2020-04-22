@@ -4,6 +4,7 @@ from tools import trans_tools as tt
 from tools import calculate_tools as ct
 
 BIND_VERTEX = 'BIND_VERTEX'
+BIND_TWEENED_VERTEX = 'BIND_TWEENED_VERTEX'
 BIND_NORMAL = 'BIND_NORMAL'
 BIND_INDICES = 'BIND_INDICES'
 BIND_UV = 'BIND_UV'
@@ -12,6 +13,7 @@ BIND_UV = 'BIND_UV'
 def bind_object(bind_type, vertexes, indices, normals, uv):
     # triangles = tt.polygon2triangle(polygons)
     vertexbuffer = None
+    vertex_tweened_buffer = None
     normalbuffer = None
     indicesbuffer = None
     uvbuffer = None
@@ -46,5 +48,13 @@ def bind_object(bind_type, vertexes, indices, normals, uv):
             uv_list = uv.flatten().tolist()
             glBufferData(GL_ELEMENT_ARRAY_BUFFER, len(uv_list) * 4,
                          (GLfloat * len(uv_list))(*uv_list), GL_STATIC_DRAW)
+        if bt == BIND_TWEENED_VERTEX:
+            vertex_tweened_buffer = glGenBuffers(1)  # create buffer
+            glBindBuffer(GL_ARRAY_BUFFER, vertex_tweened_buffer)  # bind
+            vertexes_list = vertexes.flatten().tolist()
+            ## todo:// other tweened function
+            vertexes_tweened_list = [i * 5 for i in vertexes_list]
+            glBufferData(GL_ARRAY_BUFFER, len(vertexes_tweened_list) * 4, (GLfloat * len(vertexes_tweened_list))(*vertexes_tweened_list),
+                         GL_STATIC_DRAW)
 
-    return vertexbuffer, normalbuffer, indicesbuffer, uvbuffer
+    return vertexbuffer, normalbuffer, indicesbuffer, uvbuffer, vertex_tweened_buffer

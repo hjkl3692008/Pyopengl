@@ -51,5 +51,7 @@ def test_normal():
 #                 d
 #                 )
 
+x = 1.5
+print(np.modf(x)[0])
 
 0

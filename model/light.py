@@ -20,6 +20,14 @@ Texture_uniform_default_parameter.update({'Light_specular': [0.2, 0.2, 0.2, 1.0]
                                           'ViewMatrix': None,
                                           'diffuse_texture': None,
                                           'LOCATION_OFFSET': None})
+Animated_uniform_default_parameter = basic_light_dict
+Animated_uniform_default_parameter.update({'Light_specular': [0.2, 0.2, 0.2, 1.0],
+                                           'MVP': None,
+                                           'ModelMatrix': None,
+                                           'ViewMatrix': None,
+                                           'diffuse_texture': None,
+                                           'LOCATION_OFFSET': None,
+                                           'tween': None})
 
 # attribute
 basic_attribute_dict = {'Vertex_position': 0,
@@ -31,14 +39,20 @@ Phong_attribute_default_parameter = basic_attribute_dict
 Gouraud_attribute_default_parameter = basic_attribute_dict
 Flat_attribute_default_parameter = basic_attribute_dict
 Texture_attribute_default_parameter = basic_attribute_dict
+Animated_attribute_default_parameter = basic_attribute_dict
+Animated_attribute_default_parameter.update({'tweened': 0})
 
 parameter_dict = {
+    # uniform
     'Phong.vertexshader.glsl': Phong_uniform_default_parameter,
     'Gouraud.vertexshader.glsl': Gouraud_uniform_default_parameter,
     'Flat.vertexshader.glsl': Flat_uniform_default_parameter,
     'Texture.vertexshader.glsl': Texture_uniform_default_parameter,
+    'Animated.vertexshader.glsl': Animated_uniform_default_parameter,
+    # attribute
     'Phong.fragmentshader.glsl': Phong_attribute_default_parameter,
     'Gouraud.fragmentshader.glsl': Gouraud_attribute_default_parameter,
     'Flat.fragmentshader.glsl': Flat_attribute_default_parameter,
     'Texture.fragmentshader.glsl': Texture_attribute_default_parameter,
+    'Animated.fragmentshader.glsl': Animated_attribute_default_parameter,
 }
